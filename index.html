@@ -1,78 +1,1 @@
-<!DOCTYPE html>
-<html lang="ar" dir="rtl">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>نط الكلب</title>
-    <link rel="stylesheet" href="style.css">
-</head>
-<body>
-    <div id="game-container">
-        <div id="welcome-screen" class="screen">
-            <h2>مرحباً بك </h2>
-            <button id="start-game-button">ابدأ اللعبة</button>
-        </div>
 
-        <div id="auth-screen" class="screen hidden">
-            <h2>تسجيل الدخول / إنشاء حساب</h2>
-            <input type="text" id="username-input" placeholder="اسم المستخدم">
-            <input type="password" id="password-input" placeholder="كلمة المرور">
-            <button id="login-button">تسجيل الدخول</button>
-            <button id="signup-button">إنشاء حساب</button>
-            <button id="back-to-welcome-from-auth-button">عودة</button>
-        </div>
-
-        <div id="mode-selection-screen" class="screen hidden">
-            <h2>اختر وضع اللعب</h2>
-            <button id="play-vs-ai-button">العب ضد الكمبيوتر</button>
-            <button id="play-local-button">العب محلياً</button>
-            <button id="back-to-auth-button">عودة</button>
-        </div>
-
-        <div id="game-screen" class="screen hidden">
-            <div class="game-info">
-                <p>القطع المتبقية: <span id="red-pieces-count">12</span> (أحمر)</p>
-                <p>القطع المتبقية: <span id="blue-pieces-count">12</span> (أزرق)</p>
-                <p>الدور: <span id="current-player-turn-element" style="font-weight: bold;"></span></p>
-            </div>
-            <canvas id="game-board"></canvas>
-            <div class="game-controls">
-                <button id="reset-button">🔄 إعادة تعيين</button>
-                <button id="save-game-button">💾 حفظ اللعبة</button>
-                <button id="load-game-button">📁 تحميل اللعبة</button>
-                <button id="stats-button">📊 الإحصائيات</button>
-                <button id="settings-button">⚙️ الإعدادات</button>
-                <button id="back-to-mode-selection-button">↩️ العودة</button>
-            </div>
-            <p id="game-message"></p>
-        </div>
-
-        <div id="stats-screen" class="screen hidden">
-            <h2>📊 الإحصائيات</h2>
-            <div id="stats-content" style="text-align: right; padding: 20px;"></div>
-            <button id="clear-stats-button">🗑️ مسح الإحصائيات</button>
-            <button id="back-from-stats-button">↩️ عودة</button>
-        </div>
-
-        <div id="settings-screen" class="screen hidden">
-            <h2>⚙️ الإعدادات</h2>
-            <div style="text-align: right; padding: 20px;">
-                <label style="display: block; margin: 15px 0;">
-                    <input type="checkbox" id="sound-toggle" checked> 🔊 تفعيل الأصوات
-                </label>
-                <label style="display: block; margin: 15px 0;">
-                    <input type="checkbox" id="auto-save-toggle" checked> 💾 الحفظ التلقائي
-                </label>
-                <label style="display: block; margin: 15px 0;">
-                    سرعة الأنيميشن:
-                    <input type="range" id="animation-speed" min="100" max="1000" value="300" style="width: 200px;">
-                    <span id="speed-value">300ms</span>
-                </label>
-            </div>
-            <button id="back-from-settings-button">↩️ عودة</button>
-        </div>
-    </div>
-
-    <script src="script.js"></script>
-</body>
-</html>
