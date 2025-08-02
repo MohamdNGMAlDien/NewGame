@@ -1,0 +1,237 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>DogLeap - نط الكلب</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <div id="game-container">
+        <div id="welcome-screen" class="screen">
+            <!-- أيقونة اختيار اللغة -->
+            <div class="language-selector">
+                <button id="language-btn" class="language-btn" title="Language">
+                    <span class="icon">🌐</span>
+                </button>
+                <div id="language-popup" class="language-popup hidden">
+                    <button class="lang-option" data-lang="ar">🇸🇦 العربية</button>
+                    <button class="lang-option" data-lang="en">🇺🇸 English</button>
+                </div>
+            </div>
+            
+            <div class="welcome-header">
+                <h1>DogLeap</h1>
+                <h2>نط الكلب</h2>
+            </div>
+            
+            <div id="user-status" class="user-status-card">
+                <div id="login-section">
+                    <h3>تسجيل الدخول</h3>
+                    <input type="text" id="username-input" placeholder="اسم المستخدم">
+                    <button id="login-btn" class="primary-btn">دخول</button>
+                    <button id="guest-btn" class="secondary-btn">لعب كضيف</button>
+                </div>
+                
+                <div id="logged-user-section" class="hidden">
+                    <div class="user-info">
+                        <h3 id="welcome-username">مرحباً</h3>
+                        <span class="status-badge">مسجل دخول</span>
+                    </div>
+                    <button id="logout-btn" class="logout-btn">تسجيل خروج</button>
+                </div>
+            </div>
+
+            <div class="main-actions">
+                <div class="play-menu">
+                    <button id="play-button" class="play-btn">
+                        <span class="icon">🎮</span>
+                        <span>العب الآن</span>
+                    </button>
+                    <div id="game-mode-popup" class="popup-menu hidden">
+                        <div class="popup-content small">
+                            <h3>اختر طريقة اللعب</h3>
+                            <button id="play-local-button" class="mode-btn">
+                                <span class="icon">👥</span>
+                                <span>محلي</span>
+                            </button>
+                            <button id="play-vs-ai-button" class="mode-btn">
+                                <span class="icon">🤖</span>
+                                <span>ضد الكمبيوتر</span>
+                            </button>
+                            <button id="play-online-button" class="mode-btn disabled">
+                                <span class="icon">🌐</span>
+                                <span>أونلاين (قريباً)</span>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="secondary-actions">
+                    <button id="achievements-btn" class="icon-action-btn">
+                        <span class="icon">🏆</span>
+                        <span>الإنجازات</span>
+                    </button>
+                    <button id="stats-btn" class="icon-action-btn">
+                        <span class="icon">📊</span>
+                        <span>الإحصائيات</span>
+                    </button>
+                    <button id="settings-btn" class="icon-action-btn">
+                        <span class="icon">⚙️</span>
+                        <span>الإعدادات</span>
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <div id="mode-selection-screen" class="screen hidden">
+            <h2>اختر وضع اللعب</h2>
+            <button id="play-vs-ai-button">🤖 العب ضد الكمبيوتر</button>
+            <button id="play-local-button">👥 العب محلياً</button>
+            <button id="back-to-auth-button">↩️ عودة</button>
+        </div>
+
+        <div id="difficulty-popup" class="popup-menu hidden">
+            <div class="popup-content">
+                <h3>اختر مستوى الصعوبة</h3>
+                <div class="difficulty-grid">
+                    <button id="easy-difficulty" class="difficulty-btn" data-difficulty="easy">
+                        <span class="level">مبتدئ</span>
+                        <span class="desc">حركات بسيطة</span>
+                    </button>
+                    <button id="medium-difficulty" class="difficulty-btn" data-difficulty="medium">
+                        <span class="level">متوسط</span>
+                        <span class="desc">تخطيط أساسي</span>
+                    </button>
+                    <button id="hard-difficulty" class="difficulty-btn" data-difficulty="hard">
+                        <span class="level">متقدم</span>
+                        <span class="desc">استراتيجية قوية</span>
+                    </button>
+                    <button id="expert-difficulty" class="difficulty-btn" data-difficulty="expert">
+                        <span class="level">خبير</span>
+                        <span class="desc">ذكاء فائق</span>
+                    </button>
+                </div>
+                <button id="cancel-difficulty" class="secondary-btn">إلغاء</button>
+            </div>
+        </div>
+
+        <div id="game-screen" class="screen hidden">
+            <!-- شريط علوي مع الأيقونات -->
+            <div class="game-header">
+                <button id="back-to-home-button" class="modern-icon-btn" title="العودة">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor">
+                        <path d="M19 7v3H5.83l3.58-3.59L8 5l-6 6 6 6 1.41-1.41L5.83 13H19z"/>
+                    </svg>
+                </button>
+                <div class="game-info-compact">
+                    <div class="player-indicator">
+                        <span id="current-player-turn-element"></span>
+                    </div>
+                </div>
+                <button id="menu-button" class="modern-icon-btn" title="القائمة">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor">
+                        <path d="M6 10c-1.1 0-2 .9-2 2s.9 2 2 2 2-.9 2-2-.9-2-2-2zm12 0c-1.1 0-2 .9-2 2s.9 2 2 2 2-.9 2-2-.9-2-2-2zm-6 0c-1.1 0-2 .9-2 2s.9 2 2 2 2-.9 2-2-.9-2-2-2z"/>
+                    </svg>
+                </button>
+            </div>
+
+            <!-- معلومات اللعبة المدمجة -->
+            <div class="game-status">
+                <div class="pieces-counter">
+                    <span class="red-count"><span class="piece-dot red"></span> <span id="red-pieces-count">12</span></span>
+                    <span class="blue-count"><span class="piece-dot blue"></span> <span id="blue-pieces-count">12</span></span>
+                </div>
+            </div>
+
+            <!-- لوح اللعبة الأكبر -->
+            <div class="game-board-container-enhanced">
+                <canvas id="game-board"></canvas>
+            </div>
+
+            <!-- أزرار التحكم السريع -->
+            <div class="quick-controls">
+                <button id="reset-button" class="modern-control-btn" title="إعادة تعيين">
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor">
+                        <path d="M17.65 6.35C16.2 4.9 14.21 4 12 4c-4.42 0-7.99 3.58-7.99 8s3.57 8 7.99 8c3.73 0 6.84-2.55 7.73-6h-2.08c-.82 2.33-3.04 4-5.65 4-3.31 0-6-2.69-6-6s2.69-6 6-6c1.66 0 3.14.69 4.22 1.78L13 11h7V4l-2.35 2.35z"/>
+                    </svg>
+                </button>
+                <button id="save-game-button" class="modern-control-btn" title="حفظ اللعبة">
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor">
+                        <path d="M17 3H5c-1.11 0-2 .9-2 2v14c0 1.1.89 2 2 2h14c1.1 0 2-.9 2-2V7l-4-4zm-5 16c-1.66 0-3-1.34-3-3s1.34-3 3-3 3 1.34 3 3-1.34 3-3 3zm3-10H5V5h10v4z"/>
+                    </svg>
+                </button>
+                <button id="load-game-button" class="modern-control-btn" title="تحميل اللعبة">
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor">
+                        <path d="M14,2H6A2,2 0 0,0 4,4V20A2,2 0 0,0 6,22H18A2,2 0 0,0 20,20V8L14,2M18,20H6V4H13V9H18V20Z"/>
+                    </svg>
+                </button>
+                <button id="stats-button" class="modern-control-btn" title="الإحصائيات">
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor">
+                        <path d="M22,21H2V3H4V19H6V10H10V19H12V6H16V19H18V14H22V21Z"/>
+                    </svg>
+                </button>
+            </div>
+
+            <!-- رسالة اللعبة -->
+            <p id="game-message"></p>
+
+            <!-- قائمة الإعدادات المنبثقة -->
+            <div id="settings-popup" class="popup-menu hidden">
+                <div class="popup-content">
+                    <h3>⚙️ الإعدادات</h3>
+                    <div class="setting-item">
+                        <label>
+                            <input type="checkbox" id="sound-toggle-popup" checked>
+                            <span>🔊 تفعيل الأصوات</span>
+                        </label>
+                    </div>
+                    <div class="setting-item">
+                        <label>
+                            <input type="checkbox" id="auto-save-toggle-popup" checked>
+                            <span>💾 الحفظ التلقائي</span>
+                        </label>
+                    </div>
+                    <div class="setting-item">
+                        <label>
+                            <span>🎨 سرعة الأنيميشن:</span>
+                            <input type="range" id="animation-speed-popup" min="100" max="1000" value="300">
+                            <span id="speed-value-popup">300ms</span>
+                        </label>
+                    </div>
+                    <div class="popup-actions">
+                        <button id="close-settings-popup" class="popup-btn">✓ تم</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div id="stats-screen" class="screen hidden">
+            <h2>📊 الإحصائيات</h2>
+            <div id="stats-content" style="text-align: right; padding: 20px;"></div>
+            <button id="clear-stats-button">🗑️ مسح الإحصائيات</button>
+            <button id="back-from-stats-button">↩️ عودة</button>
+        </div>
+
+        <div id="settings-screen" class="screen hidden">
+            <h2>⚙️ الإعدادات</h2>
+            <div style="text-align: right; padding: 20px;">
+                <label style="display: block; margin: 15px 0;">
+                    <input type="checkbox" id="sound-toggle" checked> 🔊 تفعيل الأصوات
+                </label>
+                <label style="display: block; margin: 15px 0;">
+                    <input type="checkbox" id="auto-save-toggle" checked> 💾 الحفظ التلقائي
+                </label>
+                <label style="display: block; margin: 15px 0;">
+                    سرعة الأنيميشن:
+                    <input type="range" id="animation-speed" min="100" max="1000" value="300" style="width: 200px;">
+                    <span id="speed-value">300ms</span>
+                </label>
+            </div>
+            <button id="back-from-settings-button">↩️ عودة</button>
+        </div>
+    </div>
+
+    <script src="script.js"></script>
+</body>
+</html>
