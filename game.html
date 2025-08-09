@@ -1,26 +1,224 @@
 <!-- game.html -->
 <!DOCTYPE html>
-<html lang="ar">
+<html lang="ar" dir="rtl">
 <head>
-  <meta charset="UTF-8">
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>اللعب أونلاين</title>
-  <link rel="stylesheet" href="style(2).css">
-  <script src="firebase-init.js"></script>
-  <script src="auth.js"></script>
+
+  <!-- تنسيقات عامة للصفحة -->
+  <link rel="stylesheet" href="style(2).css" />
+
+  <!-- تنسيقات اختيارية للشات والإيموجي (إن لم تكن موجودة يمكن حذفها) -->
+  <link rel="stylesheet" href="chat.css" />
+  <link rel="stylesheet" href="emojis.css" />
+
+  <!-- تهيئة وخدمات -->
+  <script src="firebase-init.js" defer></script>
+  <script src="auth.js" defer></script>
+
+  <!-- ميزات الواجهة الإضافية -->
+  <script src="chat.js" defer></script>
+  <script src="emojis.js" defer></script>
+
+  <!-- منطق البحث عن لاعب والخيارات المحلية -->
   <script src="game.js" defer></script>
+
+  <style>
+    /* لمسات سريعة ليظهر كل شيء مرتب حتى بدون chat.css / emojis.css */
+    body { margin: 0; font-family: system-ui, sans-serif; background:#0f1320; color:#e8ecf1; }
+    header, .controls { padding: 12px 16px; }
+    header { display:flex; align-items:center; justify-content:space-between; }
+    .btn { background:#3a6ff8; color:#fff; border:0; padding:10px 14px; border-radius:10px; cursor:pointer; }
+    .btn.ghost { background:transparent; border:1px solid #3a6ff8; }
+    #gameContainer { position:relative; width:100%; height:70vh; background:#0a0d18; border-top:1px solid #1b2238; border-bottom:1px solid #1b2238; }
+    #gameFrame { width:100%; height:100%; border:0; background:#000; }
+
+    /* شريط أدوات عائم */
+    #floatingTools { position:fixed; bottom:16px; left:16px; display:flex; gap:8px; z-index:50; }
+    #floatingTools .tool { background:#161b2e; border:1px solid #263259; color:#cfd8ff; border-radius:10px; padding:10px 12px; cursor:pointer; }
+
+    /* لوحة الشات */
+    #chatPanel { position:fixed; bottom:72px; left:16px; width:320px; max-width:92vw; background:#0f1426; border:1px solid #263259; border-radius:12px; overflow:hidden; display:none; z-index:60; }
+    #chatHeader { display:flex; align-items:center; justify-content:space-between; padding:10px 12px; background:#131938; color:#cfd8ff; }
+    #chatMessages { height:220px; overflow:auto; padding:10px 12px; display:flex; flex-direction:column; gap:6px; }
+    .msg { background:#151b31; border:1px solid #28325a; color:#e8ecf1; padding:8px 10px; border-radius:8px; max-width:85%; }
+    .msg.me { align-self:flex-end; background:#2a3a7a; }
+    #chatInputBar { display:flex; gap:6px; padding:10px 12px; background:#0f1426; border-top:1px solid #263259; }
+    #chatInput { flex:1; padding:8px 10px; border-radius:8px; border:1px solid #2a345d; background:#0b1023; color:#e8ecf1; }
+
+    /* شريط الإيموجي */
+    #emojiBar { position:fixed; bottom:72px; right:16px; width:320px; max-width:92vw; background:#0f1426; border:1px solid #263259; border-radius:12px; display:none; z-index:60; }
+    #emojiHeader { display:flex; align-items:center; justify-content:space-between; padding:10px 12px; background:#131938; color:#cfd8ff; }
+    #emojiGrid { display:grid; grid-template-columns:repeat(8, 1fr); gap:6px; padding:10px; max-height:220px; overflow:auto; }
+    .emojiBtn { font-size:20px; line-height:36px; height:36px; text-align:center; cursor:pointer; border-radius:8px; background:#151b31; border:1px solid #28325a; }
+
+    /* حالة البحث */
+    #matchStatus { margin-top: 10px; color:#a8b5ff; }
+    #alternativeOptions { margin-top:10px; }
+  </style>
 </head>
 <body>
-  <h2>مرحبا يا <span id="playerName">...</span> 👋</h2>
+  <header>
+    <h2 style="margin:0;">مرحبًا يا <span id="playerName">...</span> 👋</h2>
+    <div style="display:flex; gap:8px;">
+      <button id="onlineBtn" class="btn">🎮 اللعب أونلاين</button>
+      <button id="signOutBtn" class="btn ghost" title="تسجيل الخروج">🚪 خروج</button>
+    </div>
+  </header>
 
-  <button id="onlineBtn">🎮 اللعب أونلاين</button>
+  <div class="controls">
+    <div id="matchStatus"></div>
 
-  <div id="matchStatus" style="margin-top: 15px;"></div>
-
-  <div id="alternativeOptions" style="display: none;">
-    <p>🔎 لا يوجد لاعب متاح الآن، هل تريد إعادة البحث؟</p>
-    <button onclick="retryMatch()">نعم</button>
-    <button onclick="playLocal()">لا، العب ضد الكمبيوتر</button>
+    <div id="alternativeOptions" style="display:none;">
+      <p>🔎 لا يوجد لاعب متاح الآن، هل تريد إعادة البحث؟</p>
+      <button class="btn" onclick="retryMatch()">نعم</button>
+      <button class="btn ghost" onclick="playLocal()">لا، العب ضد الكمبيوتر</button>
+    </div>
   </div>
+
+  <!-- عرض اللعبة الأصلية داخل إطار دون لمس ملفاتها -->
+  <section id="gameContainer">
+    <iframe src="index.html" id="gameFrame" title="اللعبة الأصلية"></iframe>
+  </section>
+
+  <!-- أدوات عائمة: فتح/إغلاق الشات والإيموجي -->
+  <div id="floatingTools">
+    <button id="chatToggle" class="tool">💬 الشات</button>
+    <button id="emojiToggle" class="tool">😄 إيموجي</button>
+  </div>
+
+  <!-- لوحة الشات -->
+  <aside id="chatPanel" aria-hidden="true">
+    <div id="chatHeader">
+      <span>الدردشة</span>
+      <button id="chatClose" class="tool" style="padding:6px 10px;">✖</button>
+    </div>
+    <div id="chatMessages"></div>
+    <div id="chatInputBar">
+      <input id="chatInput" type="text" placeholder="اكتب رسالة..." />
+      <button id="chatSend" class="btn">إرسال</button>
+    </div>
+  </aside>
+
+  <!-- شريط الإيموجي -->
+  <aside id="emojiBar" aria-hidden="true">
+    <div id="emojiHeader">
+      <span>الإيموجي</span>
+      <button id="emojiClose" class="tool" style="padding:6px 10px;">✖</button>
+    </div>
+    <div id="emojiGrid">
+      <!-- بعض الإيموجيات الجاهزة كافتراضي، ويمكن لـ emojis.js استبدالها أو زيادتها -->
+      <button class="emojiBtn" data-emoji="😀">😀</button>
+      <button class="emojiBtn" data-emoji="😂">😂</button>
+      <button class="emojiBtn" data-emoji="🥳">🥳</button>
+      <button class="emojiBtn" data-emoji="🔥">🔥</button>
+      <button class="emojiBtn" data-emoji="💯">💯</button>
+      <button class="emojiBtn" data-emoji="👏">👏</button>
+      <button class="emojiBtn" data-emoji="😎">😎</button>
+      <button class="emojiBtn" data-emoji="🤝">🤝</button>
+      <button class="emojiBtn" data-emoji="👀">👀</button>
+    </div>
+  </aside>
+
+  <!-- ربط بسيط بين الواجهة واللعبة عبر postMessage بدون لمس اللعبة الأصلية -->
+  <script>
+    (function () {
+      const gameFrame = document.getElementById('gameFrame');
+      const chatPanel = document.getElementById('chatPanel');
+      const emojiBar = document.getElementById('emojiBar');
+
+      // فتح/إغلاق الشات
+      document.getElementById('chatToggle').addEventListener('click', () => {
+        chatPanel.style.display = chatPanel.style.display === 'none' || chatPanel.style.display === '' ? 'block' : 'none';
+      });
+      document.getElementById('chatClose').addEventListener('click', () => {
+        chatPanel.style.display = 'none';
+      });
+
+      // فتح/إغلاق الإيموجي
+      document.getElementById('emojiToggle').addEventListener('click', () => {
+        emojiBar.style.display = emojiBar.style.display === 'none' || emojiBar.style.display === '' ? 'block' : 'none';
+      });
+      document.getElementById('emojiClose').addEventListener('click', () => {
+        emojiBar.style.display = 'none';
+      });
+
+      // إرسال رسالة شات للّاعب الآخر وللّعبة (اختياري)
+      const chatInput = document.getElementById('chatInput');
+      const chatSend = document.getElementById('chatSend');
+      const chatMessages = document.getElementById('chatMessages');
+
+      function appendMsg(text, mine = true) {
+        const div = document.createElement('div');
+        div.className = 'msg' + (mine ? ' me' : '');
+        div.textContent = text;
+        chatMessages.appendChild(div);
+        chatMessages.scrollTop = chatMessages.scrollHeight;
+      }
+
+      function sendToGame(payload) {
+        if (gameFrame && gameFrame.contentWindow) {
+          gameFrame.contentWindow.postMessage(payload, '*');
+        }
+      }
+
+      chatSend.addEventListener('click', () => {
+        const text = chatInput.value.trim();
+        if (!text) return;
+        appendMsg(text, true);
+
+        // إرسال للعبة كحدث عام (لو حبيت تظهر فقاعة داخل اللوحة)
+        sendToGame({ type: 'chat', text });
+
+        // يمكن لـ chat.js أن يتكفّل بإرسال الرسالة أونلاين للمنافس عبر قاعدة البيانات
+        document.dispatchEvent(new CustomEvent('chat:send', { detail: { text } }));
+
+        chatInput.value = '';
+      });
+
+      chatInput.addEventListener('keydown', (e) => {
+        if (e.key === 'Enter') chatSend.click();
+      });
+
+      // الضغط على أي إيموجي يرسل للعبة ويضاف للشات
+      document.getElementById('emojiGrid').addEventListener('click', (e) => {
+        const btn = e.target.closest('.emojiBtn');
+        if (!btn) return;
+        const emoji = btn.dataset.emoji;
+        appendMsg(emoji, true);
+        sendToGame({ type: 'emoji', value: emoji });
+        document.dispatchEvent(new CustomEvent('emoji:send', { detail: { emoji } }));
+      });
+
+      // استقبال رسائل عائدة من اللعبة (اختياري لعرضها)
+      window.addEventListener('message', (event) => {
+        const data = event.data || {};
+        if (data.type === 'chat') {
+          appendMsg(data.text, false);
+        }
+        if (data.type === 'emoji') {
+          appendMsg(data.value, false);
+        }
+      });
+
+      // زر الخروج (لو auth.js يوفّر signOut يمكننا إطلاق حدث عام)
+      document.getElementById('signOutBtn').addEventListener('click', () => {
+        document.dispatchEvent(new CustomEvent('auth:signout'));
+      });
+
+      // إظهار اسم اللاعب إن لم يقم auth.js بذلك تلقائيًا
+      document.addEventListener('auth:username', (e) => {
+        const name = (e.detail && e.detail.name) || 'لاعب';
+        const span = document.getElementById('playerName');
+        span.textContent = name;
+      });
+
+      // بدء اللعب أونلاين عبر game.js (نتوقع أن game.js يستمع للحدث)
+      document.getElementById('onlineBtn').addEventListener('click', () => {
+        document.dispatchEvent(new CustomEvent('match:find'));
+      });
+    })();
+  </script>
 </body>
 </html>
-
