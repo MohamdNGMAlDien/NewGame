@@ -1,0 +1,26 @@
+<!-- game.html -->
+<!DOCTYPE html>
+<html lang="ar">
+<head>
+  <meta charset="UTF-8">
+  <title>اللعب أونلاين</title>
+  <link rel="stylesheet" href="style(2).css">
+  <script src="firebase-init.js"></script>
+  <script src="auth.js"></script>
+  <script src="game.js" defer></script>
+</head>
+<body>
+  <h2>مرحبا يا <span id="playerName">...</span> 👋</h2>
+
+  <button id="onlineBtn">🎮 اللعب أونلاين</button>
+
+  <div id="matchStatus" style="margin-top: 15px;"></div>
+
+  <div id="alternativeOptions" style="display: none;">
+    <p>🔎 لا يوجد لاعب متاح الآن، هل تريد إعادة البحث؟</p>
+    <button onclick="retryMatch()">نعم</button>
+    <button onclick="playLocal()">لا، العب ضد الكمبيوتر</button>
+  </div>
+</body>
+</html>
+
